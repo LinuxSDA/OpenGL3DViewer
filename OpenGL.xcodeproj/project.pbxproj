@@ -51,6 +51,11 @@
 
 /* Begin PBXFileReference section */
 		724FC65A24711B8D00A36ACD /* libassimp.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.5.dylib; path = "assimp-5.0.1/libs/libassimp.5.dylib"; sourceTree = "<group>"; };
+		72B7FE0F2479874B00445845 /* CommonUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CommonUtils.hpp; sourceTree = "<group>"; };
+		72B7FE10247991B200445845 /* Sphere.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Sphere.obj; sourceTree = "<group>"; };
+		72B7FE11247991B200445845 /* Cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cube.obj; sourceTree = "<group>"; };
+		72B7FE12247991B200445845 /* container.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = container.png; sourceTree = "<group>"; };
+		72B7FE13247A5B6600445845 /* container_specular.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = container_specular.png; sourceTree = "<group>"; };
 		8C3636EA24574C2D00E4FCE5 /* OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C3636ED24574C2D00E4FCE5 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		8C3636FA2457560300E4FCE5 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglfw3.a; sourceTree = "<group>"; };
@@ -140,6 +145,7 @@
 				8C7FC4E0245D5E510007639E /* stb_image */,
 				8C7FC444245A0E860007639E /* res */,
 				8C3636ED24574C2D00E4FCE5 /* main.cpp */,
+				72B7FE0F2479874B00445845 /* CommonUtils.hpp */,
 				8C7FC492245B5BA90007639E /* Renderer.cpp */,
 				8C7FC493245B5BA90007639E /* Renderer.hpp */,
 				8C7FC495245B5C6C0007639E /* VertexBuffer.cpp */,
@@ -188,6 +194,10 @@
 		8C7FC444245A0E860007639E /* res */ = {
 			isa = PBXGroup;
 			children = (
+				72B7FE13247A5B6600445845 /* container_specular.png */,
+				72B7FE12247991B200445845 /* container.png */,
+				72B7FE11247991B200445845 /* Cube.obj */,
+				72B7FE10247991B200445845 /* Sphere.obj */,
 				8C7FC4E7245D6E060007639E /* logo.png */,
 				8C7FC445245A0E860007639E /* ModelObject.shader */,
 				8C7FC7952466A9C90007639E /* LightObject.shader */,
@@ -418,7 +428,9 @@
 		8C3636F224574C2D00E4FCE5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/glfw/include\"",
 					"\"$(SRCROOT)/glew-2.1.0/include\"",
@@ -439,7 +451,9 @@
 		8C3636F324574C2D00E4FCE5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/glfw/include\"",
 					"\"$(SRCROOT)/glew-2.1.0/include\"",

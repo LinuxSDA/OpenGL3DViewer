@@ -54,6 +54,7 @@ void TriangleMesh::ProcessModel(const aiScene* scene)
         ProcessPositions(mesh);
         ProcessIndices(mesh);
         ProcessNormals(mesh);
+        ProcessUVCoords(mesh);
     }
 }
 
@@ -88,6 +89,8 @@ void TriangleMesh::ProcessIndices(const aiMesh& mesh)
 
 void TriangleMesh::ProcessNormals(const aiMesh& mesh)
 {
+    /* ToDo: Replace runntime throw with msg assert.*/
+
     if(!mesh.HasNormals())
         throw std::runtime_error("Normal not found!");
     
@@ -103,6 +106,51 @@ void TriangleMesh::ProcessNormals(const aiMesh& mesh)
     }
 }
 
+void TriangleMesh::ProcessUVCoords(const aiMesh& mesh)
+{
+    /* WARNING: I ONLY SUPPORT SINGLE CHANNEL 2D UV COORDS FOR NOW. */
+    /* ToDo: Support for 3D texture. */
+    
+    mUVCoords.clear();      /* Optional processing code ahead, clear this */
+
+    const unsigned int channelIndex = 0;
+    
+    if(!mesh.HasTextureCoords(channelIndex))
+        return;
+    
+    mUVCoords.resize(mesh.mNumVertices * kTextureCoordinates);
+
+    unsigned int uvIndex = 0;
+    for(int vIndex = 0; vIndex < mesh.mNumVertices; vIndex++)
+    {
+        mUVCoords[uvIndex++] = mesh.mTextureCoords[channelIndex][vIndex].x;
+        mUVCoords[uvIndex++] = mesh.mTextureCoords[channelIndex][vIndex].y;
+    }
+
+    /*
+     unsigned int numChannel = mesh.GetNumUVChannels();
+     
+     if(numChannel)
+     mUVCoords.resize(numChannel);
+
+     for(unsigned int channel = 0; channel < numChannel; channel++)
+    {
+        if(!mesh.HasTextureCoords(channel))
+            throw std::runtime_error("Texture for channel not found!");
+
+        mUVCoords[channel].resize(mesh.mNumVertices * kTextureCoordinates);
+
+        unsigned int uvIndex = 0;
+        for(int vIndex = 0; vIndex < mesh.mNumVertices; vIndex++)
+        {
+            mUVCoords[channel][uvIndex++] = mesh.mTextureCoords[channel][vIndex].x;
+            mUVCoords[channel][uvIndex++] = mesh.mTextureCoords[channel][vIndex].y;
+            mUVCoords[channel][uvIndex++] = mesh.mTextureCoords[channel][vIndex].z;
+        }
+    }
+    */
+}
+
 const std::vector<float>& TriangleMesh::GetPositions() const
 {
     return mPositions;
@@ -116,4 +164,9 @@ const std::vector<unsigned int>& TriangleMesh::GetIndices() const
 const std::vector<float>& TriangleMesh::GetNormals() const
 {
     return mNormals;
+}
+
+const std::vector<float>& TriangleMesh::GetUVCoords() const
+{
+    return mUVCoords;
 }

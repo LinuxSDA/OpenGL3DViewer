@@ -9,12 +9,16 @@
 #include "Texture.hpp"
 #include "ErrorHandler.hpp"
 #include "stb_image.h"
+#include <fstream>
 
 Texture::Texture(const std::string& path):mRendererId(0), mFilePath(path), mLocalBuffer(nullptr), mWidth(0), mHeight(0), mChannels(0)
 {
-    stbi_set_flip_vertically_on_load(true);
+    std::ifstream f(path.c_str());
+    ASSERT(f.good());
+    
+//    stbi_set_flip_vertically_on_load(true);
     mLocalBuffer = stbi_load(path.c_str(), &mWidth, &mHeight, &mChannels, 4);
-
+    
     GLCall(glGenTextures(1, &mRendererId));
     GLCall(glBindTexture(GL_TEXTURE_2D, mRendererId));
     
