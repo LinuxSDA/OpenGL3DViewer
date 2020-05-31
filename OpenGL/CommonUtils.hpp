@@ -2,7 +2,7 @@
 //  CommonUtils.hpp
 //  OpenGL
 //
-//  Created by SD on 23/05/20.
+//  Created by Sumit Dhingra on 23/05/20.
 //  Copyright © 2020 LinuxSDA. All rights reserved.
 //
 
@@ -63,10 +63,16 @@ namespace CommonUtils
         return boundingBox;
     }
     
-    BBCoord GetBBox(const TriangleMesh& mesh)
+    BBCoord GetBBox(const TriangleMesh& model)
     {
-        const std::vector<float>& serializedVertices = mesh.GetPositions();
-        return GetBBox(serializedVertices);
+        std::vector<CommonUtils::BBCoord> objectBBs;
+        auto modelMeshes = model.GetModelMesh();
+        objectBBs.reserve(modelMeshes.size());
+        
+        for (const auto& mesh: modelMeshes)
+            objectBBs.emplace_back(CommonUtils::GetBBox(mesh.second.mPositions));
+        
+        return CommonUtils::GetBBox(objectBBs);
     }
     
     BBCoord GetBBox(const std::vector<TriangleMesh>& meshes)

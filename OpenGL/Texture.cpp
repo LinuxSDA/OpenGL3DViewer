@@ -16,7 +16,7 @@ Texture::Texture(const std::string& path):mRendererId(0), mFilePath(path), mLoca
     std::ifstream f(path.c_str());
     ASSERT(f.good());
     
-//    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(true);
     mLocalBuffer = stbi_load(path.c_str(), &mWidth, &mHeight, &mChannels, 4);
     
     GLCall(glGenTextures(1, &mRendererId));

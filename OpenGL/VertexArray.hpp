@@ -27,7 +27,7 @@ class VertexArray
 public:
     VertexArray();
     ~VertexArray();
-    
+
     unsigned int CreateVBuffer2f(const std::vector<float>& buffer);
     unsigned int CreateVBuffer3f(const std::vector<float>& buffer);
     unsigned int CreateVBuffer4f(const std::vector<float>& buffer);

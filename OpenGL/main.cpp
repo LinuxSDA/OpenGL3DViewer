@@ -37,7 +37,8 @@
 /* 2. Handle light on object scale and rotation. */
 /* 3. Normal Matrix. */
 /* 4. Make phong shading ka kb ks params instead of light members. */
-/* 5. Move strings to a header with macro*/
+/* 5. Move strings to a header with macro. */
+/* 6. Convert mesh attributes to shared_ptr. */
 /*******************************************************************/
 
 int main(void)
@@ -76,19 +77,25 @@ int main(void)
     std::cout << "OpenGL Version: => " << glGetString(GL_VERSION) << std::endl;
     
     /****************************************/
-    TriangleMesh modelObjectMesh("../../../res/Sphere.obj");
+    TriangleMesh Model("../../../res/Sphere.obj");
+    const auto& modelMeshes = Model.GetModelMesh();
+    
+    std::deque<VertexArray> vaModels;
+    vaModels.resize(modelMeshes.size());
+    /* WARNING: careful not to reallocate any entry! */
+    for (unsigned int index = 0; index < modelMeshes.size(); index++)
+    {
+        const auto& modelPositions = modelMeshes.at(index).mPositions;
+        const auto& modelNormals   = modelMeshes.at(index).mNormals;
+        const auto& modelUVCoords  = modelMeshes.at(index).mUVCoords;
+        const auto& modelIndicies  = modelMeshes.at(index).mIndices;
 
-    const auto& modelPositions = modelObjectMesh.GetPositions();
-    const auto& modelNormals   = modelObjectMesh.GetNormals();
-    const auto& modelIndicies  = modelObjectMesh.GetIndices();
-    const auto& modelUVCoords  = modelObjectMesh.GetUVCoords();
-
-    VertexArray vaModel;
-    vaModel.CreateVBuffer3f(modelPositions);
-    vaModel.CreateVBuffer3f(modelNormals);
-    ASSERT(!modelUVCoords.empty());      /* UV's are optional. Put a check! */
-    vaModel.CreateVBuffer2f(modelUVCoords);
-    vaModel.CreateIBuffer(modelIndicies);
+        vaModels[index].CreateVBuffer3f(modelPositions);
+        vaModels[index].CreateVBuffer3f(modelNormals);
+        ASSERT(!modelUVCoords.empty());      /* UV's might be optional. Put a check! */
+        vaModels[index].CreateVBuffer2f(modelUVCoords);
+        vaModels[index].CreateIBuffer(modelIndicies);
+    }
 
     /* Todo: implement a get slot function. */
     int slot = 0;
@@ -117,8 +124,8 @@ int main(void)
 
     TriangleMesh lightObjectMesh("../../../res/Sphere.obj");
     
-    const auto& lightPositions = lightObjectMesh.GetPositions();
-    const auto& lightIndicies  = lightObjectMesh.GetIndices();
+    const auto& lightPositions = lightObjectMesh.GetModelMesh().at(0).mPositions;
+    const auto& lightIndicies  = lightObjectMesh.GetModelMesh().at(0).mIndices;
     
     VertexArray vaLight;
     vaLight.CreateVBuffer3f(lightPositions);
@@ -141,9 +148,8 @@ int main(void)
 
     /* Todo: abstract all these GetBBox calls and put them in relevent class. SERIOUSLY! */
     CommonUtils::BBCoord lightObjectBB = CommonUtils::GetBBox(lightPositions);
-    CommonUtils::BBCoord modelObjectBB = CommonUtils::GetBBox(modelPositions);
-    CommonUtils::BBCoord unionizedBB = CommonUtils::GetBBox({lightObjectBB, modelObjectBB});  /* Todo: Uggh.. Copy.. */
-
+    CommonUtils::BBCoord modelObjectBB = CommonUtils::GetBBox(Model);
+    CommonUtils::BBCoord unionizedBB = CommonUtils::GetBBox({lightObjectBB, modelObjectBB}); /* Ugh... Copy... */
 
     /* Translation, Scale, Rotation to object, Model Matrix. Local to World coordinates. */ /* Todo: abstract to class*/
     CommonUtils::Model objectModel(unionizedBB, modelObjectBB);
@@ -152,16 +158,20 @@ int main(void)
     glm::vec3 initialLightPosition = CommonUtils::GetBBoxCenter(lightObjectBB);
     glm::vec3 lightColorPicker{1.0f, 1.0f, 1.0f};
 
+    glm::vec3 lookAtCenter = CommonUtils::GetBBoxCenter(unionizedBB);
+    
     {
-        lightModel.fTranslation.x = -30.0f;
-        lightModel.fScale.x = lightModel.fScale.y = lightModel.fScale.z = 0.3f;
+        lightModel.fTranslation.x = -25.0f;
+        lightModel.fScale.x = lightModel.fScale.y = lightModel.fScale.z = 0.1f;
     }
     
-    /* Projection matrix */
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
 
+    float fieldOfView = 45.0f;
     bool enableDirectionalLight = true;
 
+    /* Todo: Abstract view matrix into a struct */
+    glm::vec3 viewTranslate{};
+    
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -173,12 +183,16 @@ int main(void)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        /* Projection matrix */
+        glm::mat4 proj = glm::perspective(glm::radians(fieldOfView), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
+
         /*************************************/
         const float radius = 60.0;
         float xdist = sin(0/*glfwGetTime()*/) * radius;
         float ydist = cos(0/*glfwGetTime()*/) * radius;
         glm::vec3 cameraPosition(xdist, 0.0, ydist);
-        glm::mat4 view = glm::lookAt(cameraPosition, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+        glm::mat4 view = glm::translate(glm::identity<glm::mat4>(), viewTranslate) *
+                         glm::lookAt(cameraPosition, lookAtCenter, glm::vec3(0.0, 1.0, 0.0));
         /*************************************/
 
         /*************************************/
@@ -197,7 +211,7 @@ int main(void)
         
         {
             modelShader.SetUniform3f("u_LightProperty.lightPos", finalLightPosition.x, finalLightPosition.y, finalLightPosition.z);
-            modelShader.SetUniform3f("u_LightProperty.ambient",  0.3f*lightColorPicker.x, 0.3f*lightColorPicker.y, 0.3f*lightColorPicker.z);
+            modelShader.SetUniform3f("u_LightProperty.ambient",  0.2f*lightColorPicker.x, 0.2f*lightColorPicker.y, 0.2f*lightColorPicker.z);
             modelShader.SetUniform3f("u_LightProperty.diffuse",  lightColorPicker.x/2, lightColorPicker.y/2, lightColorPicker.z/2);
             modelShader.SetUniform3f("u_LightProperty.specular", lightColorPicker.x, lightColorPicker.y, lightColorPicker.z);
         }
@@ -205,7 +219,9 @@ int main(void)
         /* Todo: cache Get matrix output */
         modelShader.SetUniformMat4f("u_Model", objectModel.GetMatrix()); /* Todo: pass Normal matrix here. */
         modelShader.SetUniformMat4f("u_MVP", proj * view * objectModel.GetMatrix());
-        renderer.Draw(vaModel, modelShader);
+        
+        for(const auto& vaModel: vaModels)
+            renderer.Draw(vaModel, modelShader);
 
         
         lightShader.Bind();
@@ -215,14 +231,17 @@ int main(void)
         
         {
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            
+            ImGui::SliderFloat("FOV", &fieldOfView, 10.0f, 150.0f);
+            ImGui::SliderFloat3("View Translate", glm::value_ptr(viewTranslate), -100.0f, 100.0f);
 
             ImGui::Checkbox("Sky Light", &enableDirectionalLight);
             ImGui::SliderFloat3("ModelTranslate", glm::value_ptr(lightModel.fTranslation), -100.0f, 100.0f);
-//            ImGui::SliderFloat3("ModelRotate", glm::value_ptr(lightModel.fAngle), glm::radians(0.0f), glm::radians(360.0f));
+            //ImGui::SliderFloat3("ModelRotate", glm::value_ptr(lightModel.fAngle), glm::radians(0.0f), glm::radians(360.0f));
             ImGui::SliderFloat("ModelScale", glm::value_ptr(lightModel.fScale), 0.1f, 1.0f);
             lightModel.fScale.y = lightModel.fScale.z = lightModel.fScale.x;
-
-            ImGui::ColorPicker3("LightPicker", (float*)&lightColorPicker, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
+            
+            ImGui::ColorPicker3("LightPicker", glm::value_ptr(lightColorPicker), ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
         }
         
         ImGui::Render();
