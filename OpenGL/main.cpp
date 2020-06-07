@@ -40,6 +40,7 @@
 /* 5. Move strings to a header with macro. */
 /* 6. Convert mesh attributes to shared_ptr. */
 /* 7. Mesh may either have a color or texture or both or none. Handle all cases. */
+/* 8. Some issues because of which light direction got flipped. Need to investogate. Hardcoded the -1 for now in shader.*/
 /*******************************************************************/
 
 int main(void)
@@ -265,7 +266,7 @@ int main(void)
             ImGui::Checkbox("Sky Light", &enableDirectionalLight);
             ImGui::SliderFloat3("Light Translate", glm::value_ptr(lightModel.fTranslation), -100.0f, 100.0f);
             //ImGui::SliderFloat3("ModelRotate", glm::value_ptr(lightModel.fAngle), glm::radians(0.0f), glm::radians(360.0f));
-            ImGui::SliderFloat("Model Scale", glm::value_ptr(objectModel.fScale), 0.1f, 5.0f);
+            ImGui::SliderFloat("Model Scale", glm::value_ptr(objectModel.fScale), 0.1f, 10.0f);
             objectModel.fScale.y = objectModel.fScale.z = objectModel.fScale.x;
             
             ImGui::ColorPicker3("Light Picker", glm::value_ptr(lightColorPicker), ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);

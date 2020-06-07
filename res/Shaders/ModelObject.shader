@@ -65,7 +65,7 @@ void main()
     {
         if(u_DirectionalLight.enable)
         {
-            vec3 lightDirectionVec = normalize(u_DirectionalLight.direction);
+            vec3 lightDirectionVec = normalize(-u_DirectionalLight.direction);
             vec3 normalisedNormal = normalize(fragmentNormal);
             float diffuseComponent = max(dot(normalisedNormal, lightDirectionVec), 0.0);
 
@@ -88,10 +88,10 @@ void main()
         const float kq = 0.000018f;
         
         float distance = length(u_LightProperty.lightPos - fragmetPosition);
-        float attenuation = 1.0 /(kc + kl * distance + kq * (distance * distance));
+        float attenuation = 1.0 * (kc + kl * distance + kq * (distance * distance));
 
         vec3 normalisedNormal = normalize(fragmentNormal);
-        vec3 lightDirectionVec = normalize(u_LightProperty.lightPos - fragmetPosition);
+        vec3 lightDirectionVec = -normalize(u_LightProperty.lightPos - fragmetPosition);
         float diffuseComponent = max(dot(normalisedNormal, lightDirectionVec), 0.0);
         
         vec3 eyeDirectionVec = normalize(u_ViewPos - fragmetPosition);
