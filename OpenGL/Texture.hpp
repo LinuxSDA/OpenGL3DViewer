@@ -18,6 +18,7 @@ private:
     std::string mFilePath;
     unsigned char* mLocalBuffer;
     int mWidth,mHeight, mChannels;
+    unsigned int mFormat;
     
 public:
     Texture(const std::string& path);

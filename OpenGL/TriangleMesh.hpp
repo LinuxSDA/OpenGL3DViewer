@@ -16,31 +16,49 @@
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include <map>
+#include <set>
+#include <deque>
 
 class TriangleMesh
 {
 public:
 
+    using MeshID = unsigned int;
+
+    struct Texture
+    {
+        enum Type
+        {
+            /* donot reorder! One to one mapping between assimp texture and mine*/
+            None = 0,
+            Diffuse,
+            Specular
+        };
+        
+        Type                      type = None;
+        std::deque<unsigned int>  indices;
+    };
+    
     struct Attributes
     {
         std::vector<float>                  mPositions;
         std::vector<float>                  mNormals;
         std::vector<unsigned int>           mIndices;
         std::vector<float>                  mUVCoords;
+        std::vector<Texture>                mTextures;
     };
     
-    using MeshID = unsigned int;
-
     TriangleMesh(const std::string& path);
-    
+    ~TriangleMesh();
     void Import3DModel(const std::string& path);
     void CleanModel();
     
-    const Attributes& GetMeshAttributes(MeshID) const;
+    const Attributes&                   GetMeshAttributes(MeshID) const;
     const std::map<MeshID, Attributes>& GetModelMesh() const;
-    unsigned int GetNumberOfMeshes() const;
+    unsigned int                        GetNumberOfMeshes() const;
+    const std::vector<std::string>&     GetTexturePaths() const;
+    const std::string&                  GetTexturePath(unsigned int) const;
 
-    
 private:
 
     static constexpr unsigned kCoordinates = 3;
@@ -52,8 +70,11 @@ private:
     void ProcessIndices(const aiMesh& mesh, MeshID);
     void ProcessNormals(const aiMesh& mesh, MeshID);
     void ProcessUVCoords(const aiMesh& mesh, MeshID);
-    
-    std::map<MeshID, Attributes> mMeshes;
+    void ProcessMaterials(const aiMaterial& mesh, MeshID id);
+
+    std::map<MeshID, Attributes>    mMeshes;
+    std::string                     mFilePath;
+    std::vector<std::string>        mTexturePaths;
 };
 
 #endif

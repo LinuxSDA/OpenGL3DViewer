@@ -32,13 +32,14 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-/********************************************************************/
+/**************************** TODO **********************************/
 /* 1. Major recfactor, classes, common utils to seperate file, all inside my namespaces. */
 /* 2. Handle light on object scale and rotation. */
 /* 3. Normal Matrix. */
 /* 4. Make phong shading ka kb ks params instead of light members. */
 /* 5. Move strings to a header with macro. */
 /* 6. Convert mesh attributes to shared_ptr. */
+/* 7. Mesh may either have a color or texture or both or none. Handle all cases. */
 /*******************************************************************/
 
 int main(void)
@@ -77,7 +78,7 @@ int main(void)
     std::cout << "OpenGL Version: => " << glGetString(GL_VERSION) << std::endl;
     
     /****************************************/
-    TriangleMesh Model("../../../res/Sphere.obj");
+    TriangleMesh Model("../../../res/Models/Ivysaur_OBJ/Pokemon.obj");
     const auto& modelMeshes = Model.GetModelMesh();
     
     std::deque<VertexArray> vaModels;
@@ -96,33 +97,30 @@ int main(void)
         vaModels[index].CreateVBuffer2f(modelUVCoords);
         vaModels[index].CreateIBuffer(modelIndicies);
     }
+    
+    const auto& texturePaths = Model.GetTexturePaths();
+    
+    /* WARNING: careful not to reallocate any entry! */
+    std::deque<Texture> modelTextures;
+    for(const auto& path: texturePaths)
+        modelTextures.emplace_back(path);
 
-    /* Todo: implement a get slot function. */
     int slot = 0;
     
-    Shader modelShader("../../../res/ModelObject.shader");
+    Shader modelShader("../../../res/Shaders/ModelObject.shader");
     modelShader.Bind();
 
-    Texture diffuseTexture("../../../res/container.png");
-    Texture specularTexture("../../../res/container_specular.png");
 
-    diffuseTexture.Bind(slot);
-    modelShader.SetUniform1i("u_MaterialProperty.diffuseTex", slot);
-    slot++;
-    specularTexture.Bind(slot);
-    modelShader.SetUniform1i("u_MaterialProperty.specularTex", slot);
-
+    /* ToDo: extract these values from model itself. */
     modelShader.SetUniform1f("u_MaterialProperty.shininess", 32.0f);
-    /*Todo: abstract material and light from here and create imgui for changing material.*/
-
     modelShader.SetUniform3f("u_DirectionalLight.direction", 0.0f, 1.0f, 0.0f);
-    modelShader.SetUniform3f("u_DirectionalLight.ambient",  0.1f, 0.1f, 0.1f);
-    modelShader.SetUniform3f("u_DirectionalLight.diffuse",  0.5f, 0.5f, 0.5f);
+    modelShader.SetUniform3f("u_DirectionalLight.ambient",  0.3f, 0.3f, 0.3f);
+    modelShader.SetUniform3f("u_DirectionalLight.diffuse",  0.7f, 0.7f, 0.7f);
     modelShader.SetUniform3f("u_DirectionalLight.specular", 1.0f, 1.0f, 1.0f);
 
     /****************************************/
 
-    TriangleMesh lightObjectMesh("../../../res/Sphere.obj");
+    TriangleMesh lightObjectMesh("../../../res/Models/Sphere.obj");
     
     const auto& lightPositions = lightObjectMesh.GetModelMesh().at(0).mPositions;
     const auto& lightIndicies  = lightObjectMesh.GetModelMesh().at(0).mIndices;
@@ -131,7 +129,7 @@ int main(void)
     vaLight.CreateVBuffer3f(lightPositions);
     vaLight.CreateIBuffer(lightIndicies);
 
-    Shader lightShader("../../../res/LightObject.shader");
+    Shader lightShader("../../../res/Shaders/LightObject.shader");
     lightShader.Bind();
     lightShader.SetUniform3f("u_LightColor", 1.0f, 1.0f, 1.0f);
     
@@ -149,7 +147,7 @@ int main(void)
     /* Todo: abstract all these GetBBox calls and put them in relevent class. SERIOUSLY! */
     CommonUtils::BBCoord lightObjectBB = CommonUtils::GetBBox(lightPositions);
     CommonUtils::BBCoord modelObjectBB = CommonUtils::GetBBox(Model);
-    CommonUtils::BBCoord unionizedBB = CommonUtils::GetBBox({lightObjectBB, modelObjectBB}); /* Ugh... Copy... */
+    CommonUtils::BBCoord unionizedBB = CommonUtils::GetBBox({lightObjectBB, modelObjectBB}); /* ToDo: Ugh... Copy... */
 
     /* Translation, Scale, Rotation to object, Model Matrix. Local to World coordinates. */ /* Todo: abstract to class*/
     CommonUtils::Model objectModel(unionizedBB, modelObjectBB);
@@ -220,8 +218,37 @@ int main(void)
         modelShader.SetUniformMat4f("u_Model", objectModel.GetMatrix()); /* Todo: pass Normal matrix here. */
         modelShader.SetUniformMat4f("u_MVP", proj * view * objectModel.GetMatrix());
         
-        for(const auto& vaModel: vaModels)
+        for(int index = 0; index < vaModels.size(); index++)
+        {
+            /*
+             * ToDo: Few issues here:
+             * 1) modelMeshes.at() is not very performant.
+             * 2) Multiple texture maps of same type for single mesh doesn't make much sense to me right now.
+             *    So, I'm just dealing with one map for now.
+             * 3) Abstract this out, if else is ughh...
+             */
+            const auto& vaModel = vaModels[index];
+            const auto& meshTextures = modelMeshes.at(index).mTextures;
+            
+            int slot = 0;
+            for (const auto& tex: meshTextures)
+            {
+                if(tex.type == TriangleMesh::Texture::Diffuse)
+                {
+                    modelTextures[tex.indices[0]].Bind(slot);
+                    modelShader.SetUniform1i("u_MaterialProperty.diffuseTex", slot);
+                    ++slot;
+                }
+                else if(tex.type == TriangleMesh::Texture::Specular)
+                {
+                    modelTextures[tex.indices[0]].Bind(slot++);
+                    modelShader.SetUniform1i("u_MaterialProperty.specularTex", slot);
+                    ++slot;
+                }
+            }
+            
             renderer.Draw(vaModel, modelShader);
+        }
 
         
         lightShader.Bind();
@@ -232,16 +259,16 @@ int main(void)
         {
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             
-            ImGui::SliderFloat("FOV", &fieldOfView, 10.0f, 150.0f);
+            ImGui::SliderFloat("FOV", &fieldOfView, 1.0f, 120.0f);
             ImGui::SliderFloat3("View Translate", glm::value_ptr(viewTranslate), -100.0f, 100.0f);
 
             ImGui::Checkbox("Sky Light", &enableDirectionalLight);
-            ImGui::SliderFloat3("ModelTranslate", glm::value_ptr(lightModel.fTranslation), -100.0f, 100.0f);
+            ImGui::SliderFloat3("Light Translate", glm::value_ptr(lightModel.fTranslation), -100.0f, 100.0f);
             //ImGui::SliderFloat3("ModelRotate", glm::value_ptr(lightModel.fAngle), glm::radians(0.0f), glm::radians(360.0f));
-            ImGui::SliderFloat("ModelScale", glm::value_ptr(lightModel.fScale), 0.1f, 1.0f);
-            lightModel.fScale.y = lightModel.fScale.z = lightModel.fScale.x;
+            ImGui::SliderFloat("Model Scale", glm::value_ptr(objectModel.fScale), 0.1f, 5.0f);
+            objectModel.fScale.y = objectModel.fScale.z = objectModel.fScale.x;
             
-            ImGui::ColorPicker3("LightPicker", glm::value_ptr(lightColorPicker), ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
+            ImGui::ColorPicker3("Light Picker", glm::value_ptr(lightColorPicker), ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
         }
         
         ImGui::Render();

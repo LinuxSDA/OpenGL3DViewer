@@ -18,10 +18,16 @@ TriangleMesh::TriangleMesh(const std::string& path)
     Import3DModel(path);
 }
 
+TriangleMesh::~TriangleMesh()
+{
+    CleanModel();
+}
+
 void TriangleMesh::Import3DModel(const std::string& path)
 {
     CleanModel();
-    // Create an instance of the Importer class
+    mFilePath = path;
+   // Create an instance of the Importer class
     Assimp::Importer importer;
     
     // And have it read the given file with some example postprocessing
@@ -44,6 +50,8 @@ void TriangleMesh::Import3DModel(const std::string& path)
 void TriangleMesh::CleanModel()
 {
     mMeshes.clear();
+    mFilePath.clear();
+    mTexturePaths.clear();
 }
 
 void TriangleMesh::ProcessModel(const aiScene* scene)
@@ -62,7 +70,17 @@ void TriangleMesh::ProcessModel(const aiScene* scene)
             ProcessIndices(mesh, num);
             ProcessNormals(mesh, num);
             ProcessUVCoords(mesh, num);
+            
+            if(mesh.mMaterialIndex < 0)
+                continue;
+
+            aiMaterial& material = *(scene->mMaterials[mesh.mMaterialIndex]);
+            ProcessMaterials(material, num); /* ToDo: optimise paths. */
         }
+    }
+    else
+    {
+        throw std::runtime_error("Mesh not found in file!");
     }
 }
 
@@ -132,6 +150,50 @@ void TriangleMesh::ProcessUVCoords(const aiMesh& mesh, MeshID id)
     }
 }
 
+void TriangleMesh::ProcessMaterials(const aiMaterial& material, MeshID id)
+{
+    std::string directory = mFilePath.substr(0, mFilePath.find_last_of('/'));   /* the hell with Windows! ToDo: use boost::fs */
+
+    Attributes& attr = mMeshes[id];
+    
+    /* ToDo: I'll only process Diffuse and Specular for now. Process others later */
+    std::vector<aiTextureType> typesToProcess {aiTextureType_DIFFUSE, aiTextureType_SPECULAR};
+
+    for(auto type : typesToProcess)
+    {
+        auto textureCount = material.GetTextureCount(type);
+        
+        if(!textureCount)
+            continue;
+        
+        Texture texture;
+        texture.type = static_cast<Texture::Type>(type);
+
+        for(unsigned int index = 0; index < textureCount; index++)
+        {
+            aiString textureName{};
+            auto status = material.GetTexture(type, index, &textureName);
+            ASSERT( status == aiReturn_SUCCESS);
+            std::string texturePath = directory + '/' + textureName.C_Str();
+
+            /* ToDo: There has to be a better way to manage unique paths with indicies. */
+            auto iterator = std::find(mTexturePaths.begin(), mTexturePaths.end(), texturePath);
+            
+            if (iterator != mTexturePaths.end())
+            {
+                unsigned int index = static_cast<unsigned int>(std::distance(mTexturePaths.begin(), iterator));
+                texture.indices.push_back(index);
+            }
+            else
+            {
+                texture.indices.push_back(static_cast<unsigned int>(mTexturePaths.size()));
+                mTexturePaths.emplace_back(std::move(texturePath));
+            }
+        }
+        attr.mTextures.emplace_back(std::move(texture));
+    }
+}
+
 const TriangleMesh::Attributes& TriangleMesh::GetMeshAttributes(MeshID id) const
 {
     return mMeshes.at(id);
@@ -144,5 +206,15 @@ const std::map<TriangleMesh::MeshID, TriangleMesh::Attributes>& TriangleMesh::Ge
 
 unsigned int TriangleMesh::GetNumberOfMeshes() const
 {
-    return mMeshes.size();
+    return static_cast<unsigned int>(mMeshes.size());
+}
+
+const std::vector<std::string>& TriangleMesh::GetTexturePaths() const
+{
+    return mTexturePaths;
+}
+
+const std::string& TriangleMesh::GetTexturePath(unsigned int index) const
+{
+    return mTexturePaths.at(index);
 }
