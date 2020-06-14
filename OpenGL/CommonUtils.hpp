@@ -133,15 +133,15 @@ namespace CommonUtils
     
     struct Model
     {
-        Model(const BBCoord& completeSpan, const BBCoord& localSpan)
+        Model(const BBCoord& completeSpan, const BBCoord& meshSpan)
         {
             fLocalCenter.x = ( completeSpan.Min.x + completeSpan.Max.x ) / 2.0f;
             fLocalCenter.y = ( completeSpan.Min.y + completeSpan.Max.y ) / 2.0f;
             fLocalCenter.z = ( completeSpan.Min.z + completeSpan.Max.z ) / 2.0f;
             
-            fMeshCenter.x = ( localSpan.Min.x + localSpan.Max.x ) / 2.0f;
-            fMeshCenter.y = ( localSpan.Min.y + localSpan.Max.y ) / 2.0f;
-            fMeshCenter.z = ( localSpan.Min.z + localSpan.Max.z ) / 2.0f;
+            fMeshCenter.x = ( meshSpan.Min.x + meshSpan.Max.x ) / 2.0f;
+            fMeshCenter.y = ( meshSpan.Min.y + meshSpan.Max.y ) / 2.0f;
+            fMeshCenter.z = ( meshSpan.Min.z + meshSpan.Max.z ) / 2.0f;
         }
         
         glm::vec3 fAngle       {0.0f, 0.0f, 0.0f};

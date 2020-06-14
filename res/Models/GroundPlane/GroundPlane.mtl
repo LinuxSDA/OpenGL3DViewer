@@ -1,0 +1,11 @@
+newmtl Disc Material Layer Stack
+illum 7
+Kd 0.815686 0.815686 0.815686
+Ni 1.6
+Tr 0
+d 1
+Ka 0 0 0
+Ke 0 0 0
+Ns 16
+Ks 1 1 1
+map_Kd baseColor.png
