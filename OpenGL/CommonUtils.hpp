@@ -109,7 +109,17 @@ namespace CommonUtils
             (bbox.Min.z + bbox.Max.z)/2.0f
         };
     }
-    
+
+    float GetBBoxHeight(const BBCoord& bbox)
+    {
+        return (bbox.Max.y - bbox.Min.y);
+    }
+
+    float GetBBoxWidth(const BBCoord& bbox)
+    {
+        return (bbox.Max.x - bbox.Min.x);
+    }
+
     glm::mat4 GenerateOrthoMatrix(BBCoord span, float aspectRatio)
     {
         float width  = std::fabs(span.Min.x - span.Max.x);
@@ -131,9 +141,9 @@ namespace CommonUtils
         return glm::ortho(-width/2.0f, width/2.0f, -height/2.0f, height/2.0f, span.Min.z, span.Max.z);
     }
     
-    struct Model
+    struct ModelMatrix
     {
-        Model(const BBCoord& completeSpan, const BBCoord& meshSpan)
+        ModelMatrix(const BBCoord& completeSpan, const BBCoord& meshSpan)
         {
             fLocalCenter.x = ( completeSpan.Min.x + completeSpan.Max.x ) / 2.0f;
             fLocalCenter.y = ( completeSpan.Min.y + completeSpan.Max.y ) / 2.0f;

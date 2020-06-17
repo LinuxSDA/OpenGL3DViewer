@@ -82,6 +82,7 @@ int main(void)
     std::cout << "OpenGL Version: => " << glGetString(GL_VERSION) << std::endl;
     
 
+    /* Y axis is up. */
     
     Helper::ModelRenderer groundModel("../../../res/Models/GroundPlane/GroundPlane.obj");
     Helper::ModelRenderer objectModel("../../../res/Models/Ivysaur_OBJ/Pokemon.obj");
@@ -131,9 +132,9 @@ int main(void)
     CommonUtils::BBCoord unionizedBB = CommonUtils::GetBBox({lightObjectBB, modelObjectBB, groundObjectBB}); /* ToDo: Ugh... Copy... */
 
     /* Translation, Scale, Rotation to object, Model Matrix. Local to World coordinates. */ /* Todo: abstract to class*/
-    CommonUtils::Model objectModelMatrix(unionizedBB, modelObjectBB);
-    CommonUtils::Model lightModelMatrix(unionizedBB, lightObjectBB);
-    CommonUtils::Model groundModelMatrix(unionizedBB, groundObjectBB);
+    CommonUtils::ModelMatrix objectModelMatrix(unionizedBB, modelObjectBB);
+    CommonUtils::ModelMatrix lightModelMatrix(unionizedBB, lightObjectBB);
+    CommonUtils::ModelMatrix groundModelMatrix(unionizedBB, groundObjectBB);
 
     glm::vec3 initialLightPosition = CommonUtils::GetBBoxCenter(lightObjectBB);
     glm::vec3 lightColorPicker{1.0f, 1.0f, 1.0f};
@@ -145,7 +146,6 @@ int main(void)
         lightModelMatrix.fScale.x = lightModelMatrix.fScale.y = lightModelMatrix.fScale.z = 0.1f;
     }
     
-
     float fieldOfView = 45.0f;
     bool enableDirectionalLight = true;
 
@@ -178,6 +178,7 @@ int main(void)
         /*************************************/
         float yAngle = 0; /* glfwGetTime(); */
         objectModelMatrix.fAngle = glm::vec3(0.0f, yAngle, 0.0f);
+        objectModelMatrix.fScale = glm::vec3(5.0f, 5.0f, 5.0f);
         /*************************************/
 
         auto finalLightPosition = glm::vec3(lightModelMatrix.GetMatrix() * glm::vec4(initialLightPosition, 1.0f));
@@ -196,7 +197,13 @@ int main(void)
             modelShader.SetUniform3f("u_LightProperty.specular", lightColorPicker.x, lightColorPicker.y, lightColorPicker.z);
         }
         
-        groundModelMatrix.fAngle.x = 0.01;
+        {
+            /* Place ground below object */
+            auto distance = CommonUtils::GetBBoxCenter(modelObjectBB) - CommonUtils::GetBBoxCenter(groundObjectBB);
+            distance -= glm::vec3(0, CommonUtils::GetBBoxHeight(modelObjectBB)/2  * objectModelMatrix.fScale.y, 0);
+            groundModelMatrix.fTranslation = distance;
+        }
+
         /* Todo: cache Get matrix output */
         modelShader.SetUniformMat4f("u_Model", groundModelMatrix.GetMatrix()); /* Todo: pass Normal matrix here. */
         modelShader.SetUniformMat4f("u_MVP", proj * view * groundModelMatrix.GetMatrix());
