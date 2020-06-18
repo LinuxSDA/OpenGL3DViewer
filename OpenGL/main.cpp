@@ -152,6 +152,8 @@ int main(void)
     /* Todo: Abstract view matrix into a struct */
     glm::vec3 viewTranslate{};
     
+    objectModelMatrix.fScale = glm::vec3(5.0f, 5.0f, 5.0f);
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -178,7 +180,6 @@ int main(void)
         /*************************************/
         float yAngle = 0; /* glfwGetTime(); */
         objectModelMatrix.fAngle = glm::vec3(0.0f, yAngle, 0.0f);
-        objectModelMatrix.fScale = glm::vec3(5.0f, 5.0f, 5.0f);
         /*************************************/
 
         auto finalLightPosition = glm::vec3(lightModelMatrix.GetMatrix() * glm::vec4(initialLightPosition, 1.0f));
