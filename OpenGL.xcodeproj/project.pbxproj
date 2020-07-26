@@ -10,7 +10,9 @@
 		724FC6512471188A00A36ACD /* libIrrXML.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C7FC6F52461FD4F0007639E /* libIrrXML.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		724FC65B24711B8D00A36ACD /* libassimp.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 724FC65A24711B8D00A36ACD /* libassimp.5.dylib */; };
 		724FC65E24711BE800A36ACD /* libassimp.5.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 724FC65A24711B8D00A36ACD /* libassimp.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		72A13161249175B50035D7F1 /* ModelRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72A1315F249175B50035D7F1 /* ModelRenderer.cpp */; };
+		72A13161249175B50035D7F1 /* ModelRendererHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72A1315F249175B50035D7F1 /* ModelRendererHelper.cpp */; };
+		72C5089C24C37BA1003268B6 /* FramebufferRenderHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72C5089A24C37BA1003268B6 /* FramebufferRenderHelper.cpp */; };
+		72C8634F24A3AEA200B25726 /* Framebuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72C8634D24A3AEA200B25726 /* Framebuffer.cpp */; };
 		8C3636EE24574C2D00E4FCE5 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C3636ED24574C2D00E4FCE5 /* main.cpp */; };
 		8C3636FC2457561000E4FCE5 /* libglfw.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3636FB2457560300E4FCE5 /* libglfw.3.dylib */; };
 		8C3636FD2457561000E4FCE5 /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3636FA2457560300E4FCE5 /* libglfw3.a */; };
@@ -53,9 +55,13 @@
 /* Begin PBXFileReference section */
 		724FC65A24711B8D00A36ACD /* libassimp.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.5.dylib; path = "assimp-5.0.1/libs/libassimp.5.dylib"; sourceTree = "<group>"; };
 		7251AB8C248CFA5E00413888 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = SOURCE_ROOT; };
-		72A1315F249175B50035D7F1 /* ModelRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ModelRenderer.cpp; sourceTree = "<group>"; };
-		72A13160249175B50035D7F1 /* ModelRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ModelRenderer.hpp; sourceTree = "<group>"; };
+		72A1315F249175B50035D7F1 /* ModelRendererHelper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ModelRendererHelper.cpp; sourceTree = "<group>"; };
+		72A13160249175B50035D7F1 /* ModelRendererHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ModelRendererHelper.hpp; sourceTree = "<group>"; };
 		72B7FE0F2479874B00445845 /* CommonUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CommonUtils.hpp; sourceTree = "<group>"; };
+		72C5089A24C37BA1003268B6 /* FramebufferRenderHelper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FramebufferRenderHelper.cpp; sourceTree = "<group>"; };
+		72C5089B24C37BA1003268B6 /* FramebufferRenderHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FramebufferRenderHelper.hpp; sourceTree = "<group>"; };
+		72C8634D24A3AEA200B25726 /* Framebuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Framebuffer.cpp; sourceTree = "<group>"; };
+		72C8634E24A3AEA200B25726 /* Framebuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Framebuffer.hpp; sourceTree = "<group>"; };
 		8C3636EA24574C2D00E4FCE5 /* OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C3636ED24574C2D00E4FCE5 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		8C3636FA2457560300E4FCE5 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglfw3.a; sourceTree = "<group>"; };
@@ -160,8 +166,12 @@
 				8C7FC4E5245D5F240007639E /* Texture.hpp */,
 				8C7FC6EC2461E61E0007639E /* TriangleMesh.cpp */,
 				8C7FC6ED2461E61E0007639E /* TriangleMesh.hpp */,
-				72A1315F249175B50035D7F1 /* ModelRenderer.cpp */,
-				72A13160249175B50035D7F1 /* ModelRenderer.hpp */,
+				72A1315F249175B50035D7F1 /* ModelRendererHelper.cpp */,
+				72A13160249175B50035D7F1 /* ModelRendererHelper.hpp */,
+				72C8634D24A3AEA200B25726 /* Framebuffer.cpp */,
+				72C8634E24A3AEA200B25726 /* Framebuffer.hpp */,
+				72C5089A24C37BA1003268B6 /* FramebufferRenderHelper.cpp */,
+				72C5089B24C37BA1003268B6 /* FramebufferRenderHelper.hpp */,
 			);
 			path = OpenGL;
 			sourceTree = "<group>";
@@ -278,6 +288,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8C7FC6AA245E061E0007639E /* imgui_draw.cpp in Sources */,
+				72C8634F24A3AEA200B25726 /* Framebuffer.cpp in Sources */,
 				8C7FC494245B5BA90007639E /* Renderer.cpp in Sources */,
 				8C7FC4E3245D5E750007639E /* stb_image.cpp in Sources */,
 				8C7FC6A9245E061E0007639E /* imgui_demo.cpp in Sources */,
@@ -288,10 +299,11 @@
 				8C7FC6AF245E0AA90007639E /* imgui_impl_glfw.cpp in Sources */,
 				8C7FC6A8245E061E0007639E /* imgui.cpp in Sources */,
 				8C7FC4DF245D4F510007639E /* ErrorHandler.cpp in Sources */,
-				72A13161249175B50035D7F1 /* ModelRenderer.cpp in Sources */,
+				72A13161249175B50035D7F1 /* ModelRendererHelper.cpp in Sources */,
 				8C7FC49A245B5F090007639E /* IndexBuffer.cpp in Sources */,
 				8C7FC4D6245C78E30007639E /* VertexArray.cpp in Sources */,
 				8C7FC4DC245CAEBD0007639E /* Shader.cpp in Sources */,
+				72C5089C24C37BA1003268B6 /* FramebufferRenderHelper.cpp in Sources */,
 				8C7FC497245B5C6C0007639E /* VertexBuffer.cpp in Sources */,
 				8C7FC6EE2461E61E0007639E /* TriangleMesh.cpp in Sources */,
 			);

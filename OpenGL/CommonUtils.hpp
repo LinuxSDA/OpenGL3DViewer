@@ -161,7 +161,6 @@ namespace CommonUtils
         glm::mat4 GetMatrix()
         {
             /* TODO: Optimise and organise*/
-            
             auto TranslateToOrigin  = glm::translate(glm::identity<glm::mat4>(), -fMeshCenter);
             auto Scale              = glm::scale(glm::identity<glm::mat4>(), glm::vec3(fScale.x, fScale.y, fScale.z));
             auto Rotate             = glm::eulerAngleXYZ(fAngle.x, fAngle.y, fAngle.z);

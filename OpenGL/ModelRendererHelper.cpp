@@ -6,7 +6,7 @@
 //  Copyright © 2020 LinuxSDA. All rights reserved.
 //
 
-#include "ModelRenderer.hpp"
+#include "ModelRendererHelper.hpp"
 
 namespace Helper
 {
@@ -66,6 +66,8 @@ namespace Helper
         /*
          * ToDo: Few issues here:
          */
+        shader.SetUniform1f("u_MaterialProperty.shininess", 32.0f);
+
         const auto& modelMeshes = fModel->GetModelMesh();
 
         for(int index = 0; index < fModelVA.size(); index++)

@@ -14,21 +14,23 @@
 class Texture
 {
 private:
-    unsigned int mRendererId;
-    std::string mFilePath;
-    unsigned char* mLocalBuffer;
-    int mWidth,mHeight, mChannels;
-    unsigned int mFormat;
+    unsigned int mRendererId{};
+    std::string mFilePath{};
+    unsigned char* mLocalBuffer{};
+    int mWidth{}, mHeight{}, mChannels{};
+    unsigned int mFormat{};
     
 public:
     Texture(const std::string& path);
+    Texture(unsigned int width, unsigned int height, unsigned int channel);
     ~Texture();
     
     void Bind(unsigned int slot = 0) const;
     void Unbind() const;
     
-    inline int GetWidth() { return mWidth;}
-    inline int GetHeight() { return mHeight;}
+    inline int GetWidth() const { return mWidth;}
+    inline int GetHeight() const { return mHeight;}
+    inline int GetTextureID() const { return mRendererId;}
     
 };
 #endif /* Texture_hpp */

@@ -16,8 +16,8 @@
 #include "Texture.hpp"
 #include "TriangleMesh.hpp"
 #include "CommonUtils.hpp"
-#include "ModelRenderer.hpp"
-
+#include "ModelRendererHelper.hpp"
+#include "FramebufferRenderHelper.hpp"
 #include <string>
 #include <vector>
 #include <fstream>
@@ -41,7 +41,6 @@
 /* 5. Move strings to a header with macro. */
 /* 6. Convert mesh attributes to shared_ptr. */
 /* 7. Mesh may either have a color or texture or both or none. Handle all cases. */
-/* 8. Some issues because of which light direction got flipped. Need to investogate. Hardcoded the -1 for now in shader.*/
 /* 9. Load nano suit to check whether model loading works alright.*/
 /* 10. Implement export mesh. */
 /*******************************************************************/
@@ -78,10 +77,9 @@ int main(void)
     if (GLEW_OK != err)
         std::cout << "Glew Not Okay" << std::endl;
 
-    #pragma message("Use ErrorLogger instead of couts")
+    /* ToDo: Use ErrorLogger instead of couts */
     std::cout << "OpenGL Version: => " << glGetString(GL_VERSION) << std::endl;
     
-
     /* Y axis is up. */
     
     Helper::ModelRenderer groundModel("../../../res/Models/GroundPlane/GroundPlane.obj");
@@ -90,9 +88,7 @@ int main(void)
     Shader modelShader("../../../res/Shaders/ModelObject.shader");
     modelShader.Bind();
 
-
     /* ToDo: extract these values from model itself. */
-    modelShader.SetUniform1f("u_MaterialProperty.shininess", 32.0f);
     modelShader.SetUniform3f("u_DirectionalLight.direction", 0.0f, 1.0f, 0.0f);
     modelShader.SetUniform3f("u_DirectionalLight.ambient",  0.3f, 0.3f, 0.3f);
     modelShader.SetUniform3f("u_DirectionalLight.diffuse",  0.7f, 0.7f, 0.7f);
@@ -100,23 +96,21 @@ int main(void)
 
     /****************************************/
 
-    TriangleMesh lightObjectMesh("../../../res/Models/Sphere.obj");
-    
-    const auto& lightPositions = lightObjectMesh.GetModelMesh().at(0).mPositions;
-    const auto& lightIndicies  = lightObjectMesh.GetModelMesh().at(0).mIndices;
-    
-    VertexArray vaLight;
-    vaLight.CreateVBuffer3f(lightPositions);
-    vaLight.CreateIBuffer(lightIndicies);
+    Helper::ModelRenderer lightModel("../../../res/Models/Light/Light.obj");
 
     Shader lightShader("../../../res/Shaders/LightObject.shader");
     lightShader.Bind();
     lightShader.SetUniform3f("u_LightColor", 1.0f, 1.0f, 1.0f);
     
+
+    /******* Frame Buffer code here *********/
+//    Helper::FramebufferRenderer framebuffer(ScreenWidth, ScreenHeight);
+//    Shader framebufferShader("../../../res/Shaders/Framebuffer.shader");
     /****************************************/
 
     Renderer renderer;
     renderer.EnableDepth(GL_LESS);
+//    renderer.EnableBlend();
     
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
@@ -125,7 +119,7 @@ int main(void)
     ImGui_ImplOpenGL3_Init("#version 150");
 
     /* Todo: abstract all these GetBBox calls and put them in relevent class. SERIOUSLY! */
-    CommonUtils::BBCoord lightObjectBB = CommonUtils::GetBBox(lightObjectMesh);
+    CommonUtils::BBCoord lightObjectBB = CommonUtils::GetBBox(lightModel.GetTriangleMesh());
     CommonUtils::BBCoord modelObjectBB = CommonUtils::GetBBox(objectModel.GetTriangleMesh());
     CommonUtils::BBCoord groundObjectBB = CommonUtils::GetBBox(groundModel.GetTriangleMesh()); /* Todo: Add a get bound to renderermodel maybe?*/
 
@@ -142,8 +136,8 @@ int main(void)
     glm::vec3 lookAtCenter = CommonUtils::GetBBoxCenter(unionizedBB);
     
     {
-        lightModelMatrix.fTranslation.x = -25.0f;
-        lightModelMatrix.fScale.x = lightModelMatrix.fScale.y = lightModelMatrix.fScale.z = 0.1f;
+        lightModelMatrix.fTranslation.x = -15.0f;
+        lightModelMatrix.fScale.x = lightModelMatrix.fScale.y = lightModelMatrix.fScale.z = 1.4f;
     }
     
     float fieldOfView = 45.0f;
@@ -153,14 +147,16 @@ int main(void)
     glm::vec3 viewTranslate{};
     
     objectModelMatrix.fScale = glm::vec3(5.0f, 5.0f, 5.0f);
-
+    
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
-        
         /* Render here */
         renderer.Clear();
         
+//        framebuffer.Bind();
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -203,25 +199,34 @@ int main(void)
             auto distance = CommonUtils::GetBBoxCenter(modelObjectBB) - CommonUtils::GetBBoxCenter(groundObjectBB);
             distance -= glm::vec3(0, CommonUtils::GetBBoxHeight(modelObjectBB)/2  * objectModelMatrix.fScale.y, 0);
             groundModelMatrix.fTranslation = distance;
+            /* ToDo: I should actually put object on ground instead of other way round. */
         }
 
-        /* Todo: cache Get matrix output */
-        modelShader.SetUniformMat4f("u_Model", groundModelMatrix.GetMatrix()); /* Todo: pass Normal matrix here. */
-        modelShader.SetUniformMat4f("u_MVP", proj * view * groundModelMatrix.GetMatrix());
-
-        groundModel.Draw(renderer, modelShader);
-
-        /* Todo: cache Get matrix output */
-        modelShader.SetUniformMat4f("u_Model", objectModelMatrix.GetMatrix()); /* Todo: pass Normal matrix here. */
-        modelShader.SetUniformMat4f("u_MVP", proj * view * objectModelMatrix.GetMatrix());
-
-        objectModel.Draw(renderer, modelShader);
-
-        lightShader.Bind();
-        lightShader.SetUniformMat4f("u_MVP", proj * view * lightModelMatrix.GetMatrix());
-        lightShader.SetUniform3f("u_LightColor", lightColorPicker.x, lightColorPicker.y, lightColorPicker.z);
-        renderer.Draw(vaLight, lightShader);
+        {
+            /* Todo: cache Get matrix output */
+            modelShader.SetUniformMat4f("u_Model", objectModelMatrix.GetMatrix()); /* Todo: pass Normal matrix here. */
+            modelShader.SetUniformMat4f("u_MVP", proj * view * objectModelMatrix.GetMatrix());
+            objectModel.Draw(renderer, modelShader);
+        }
         
+        {
+            /* Todo: cache Get matrix output */
+            modelShader.SetUniformMat4f("u_Model", groundModelMatrix.GetMatrix()); /* Todo: pass Normal matrix here. */
+            modelShader.SetUniformMat4f("u_MVP", proj * view * groundModelMatrix.GetMatrix());
+            groundModel.Draw(renderer, modelShader);
+        }
+
+        {
+            lightShader.Bind();
+            lightShader.SetUniformMat4f("u_MVP", proj * view * lightModelMatrix.GetMatrix());
+            lightShader.SetUniform3f("u_LightColor", lightColorPicker.x, lightColorPicker.y, lightColorPicker.z);
+            
+            lightModel.Draw(renderer, lightShader);
+        }
+
+//        framebuffer.Unbind();
+//        framebuffer.Draw(renderer, framebufferShader);
+
         {
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             
