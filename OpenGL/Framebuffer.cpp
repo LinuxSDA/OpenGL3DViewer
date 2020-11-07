@@ -36,8 +36,8 @@ void Framebuffer::Bind(const Texture& texture)
 
     GLCall(glViewport(0, 0, texture.GetWidth(), texture.GetHeight()));
     GLCall(glClearColor(0.1f, 0.1f, 0.1f, 1.0f));
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
+    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+    GLCall(glEnable(GL_DEPTH_TEST));
 }
 
 void Framebuffer::Unbind()

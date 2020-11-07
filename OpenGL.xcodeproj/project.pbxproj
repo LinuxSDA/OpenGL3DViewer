@@ -54,7 +54,28 @@
 
 /* Begin PBXFileReference section */
 		724FC65A24711B8D00A36ACD /* libassimp.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.5.dylib; path = "assimp-5.0.1/libs/libassimp.5.dylib"; sourceTree = "<group>"; };
-		7251AB8C248CFA5E00413888 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = SOURCE_ROOT; };
+		7277A75A255683480028E5A8 /* GUIContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GUIContext.hpp; sourceTree = "<group>"; };
+		7277A75D255683610028E5A8 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
+		7277A760255683610028E5A8 /* GroundPlane.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GroundPlane.mtl; sourceTree = "<group>"; };
+		7277A761255683610028E5A8 /* baseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = baseColor.png; sourceTree = "<group>"; };
+		7277A762255683610028E5A8 /* GroundPlane.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GroundPlane.obj; sourceTree = "<group>"; };
+		7277A763255683610028E5A8 /* Sphere.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Sphere.obj; sourceTree = "<group>"; };
+		7277A764255683610028E5A8 /* Cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cube.obj; sourceTree = "<group>"; };
+		7277A766255683610028E5A8 /* Pokemon.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Pokemon.obj; sourceTree = "<group>"; };
+		7277A767255683610028E5A8 /* info.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = info.txt; sourceTree = "<group>"; };
+		7277A768255683610028E5A8 /* Final_Pokemon_Glossiness.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Final_Pokemon_Glossiness.jpg; sourceTree = "<group>"; };
+		7277A769255683610028E5A8 /* Final_Pokemon_Ambient_Occlusion.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Final_Pokemon_Ambient_Occlusion.jpg; sourceTree = "<group>"; };
+		7277A76A255683610028E5A8 /* Final_Pokemon_Specular.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Final_Pokemon_Specular.jpg; sourceTree = "<group>"; };
+		7277A76B255683610028E5A8 /* Final_Pokemon_Diffuse.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Final_Pokemon_Diffuse.jpg; sourceTree = "<group>"; };
+		7277A76C255683610028E5A8 /* Final_Pokemon_Emissive.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Final_Pokemon_Emissive.jpg; sourceTree = "<group>"; };
+		7277A76D255683610028E5A8 /* Final_Pokemon_Normal.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Final_Pokemon_Normal.jpg; sourceTree = "<group>"; };
+		7277A76E255683610028E5A8 /* Pokemon.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Pokemon.mtl; sourceTree = "<group>"; };
+		7277A770255683610028E5A8 /* baseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = baseColor.png; sourceTree = "<group>"; };
+		7277A771255683610028E5A8 /* Light.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Light.mtl; sourceTree = "<group>"; };
+		7277A772255683610028E5A8 /* Light.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Light.obj; sourceTree = "<group>"; };
+		7277A774255683610028E5A8 /* Framebuffer.shader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Framebuffer.shader; sourceTree = "<group>"; };
+		7277A775255683610028E5A8 /* LightObject.shader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LightObject.shader; sourceTree = "<group>"; };
+		7277A776255683610028E5A8 /* ModelObject.shader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ModelObject.shader; sourceTree = "<group>"; };
 		72A1315F249175B50035D7F1 /* ModelRendererHelper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ModelRendererHelper.cpp; sourceTree = "<group>"; };
 		72A13160249175B50035D7F1 /* ModelRendererHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ModelRendererHelper.hpp; sourceTree = "<group>"; };
 		72B7FE0F2479874B00445845 /* CommonUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CommonUtils.hpp; sourceTree = "<group>"; };
@@ -124,6 +145,82 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7277A75B255683610028E5A8 /* res */ = {
+			isa = PBXGroup;
+			children = (
+				7277A75C255683610028E5A8 /* Others */,
+				7277A75E255683610028E5A8 /* Models */,
+				7277A773255683610028E5A8 /* Shaders */,
+			);
+			path = res;
+			sourceTree = SOURCE_ROOT;
+		};
+		7277A75C255683610028E5A8 /* Others */ = {
+			isa = PBXGroup;
+			children = (
+				7277A75D255683610028E5A8 /* logo.png */,
+			);
+			path = Others;
+			sourceTree = "<group>";
+		};
+		7277A75E255683610028E5A8 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				7277A75F255683610028E5A8 /* GroundPlane */,
+				7277A763255683610028E5A8 /* Sphere.obj */,
+				7277A764255683610028E5A8 /* Cube.obj */,
+				7277A765255683610028E5A8 /* Ivysaur_OBJ */,
+				7277A76F255683610028E5A8 /* Light */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		7277A75F255683610028E5A8 /* GroundPlane */ = {
+			isa = PBXGroup;
+			children = (
+				7277A760255683610028E5A8 /* GroundPlane.mtl */,
+				7277A761255683610028E5A8 /* baseColor.png */,
+				7277A762255683610028E5A8 /* GroundPlane.obj */,
+			);
+			path = GroundPlane;
+			sourceTree = "<group>";
+		};
+		7277A765255683610028E5A8 /* Ivysaur_OBJ */ = {
+			isa = PBXGroup;
+			children = (
+				7277A766255683610028E5A8 /* Pokemon.obj */,
+				7277A767255683610028E5A8 /* info.txt */,
+				7277A768255683610028E5A8 /* Final_Pokemon_Glossiness.jpg */,
+				7277A769255683610028E5A8 /* Final_Pokemon_Ambient_Occlusion.jpg */,
+				7277A76A255683610028E5A8 /* Final_Pokemon_Specular.jpg */,
+				7277A76B255683610028E5A8 /* Final_Pokemon_Diffuse.jpg */,
+				7277A76C255683610028E5A8 /* Final_Pokemon_Emissive.jpg */,
+				7277A76D255683610028E5A8 /* Final_Pokemon_Normal.jpg */,
+				7277A76E255683610028E5A8 /* Pokemon.mtl */,
+			);
+			path = Ivysaur_OBJ;
+			sourceTree = "<group>";
+		};
+		7277A76F255683610028E5A8 /* Light */ = {
+			isa = PBXGroup;
+			children = (
+				7277A770255683610028E5A8 /* baseColor.png */,
+				7277A771255683610028E5A8 /* Light.mtl */,
+				7277A772255683610028E5A8 /* Light.obj */,
+			);
+			path = Light;
+			sourceTree = "<group>";
+		};
+		7277A773255683610028E5A8 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				7277A774255683610028E5A8 /* Framebuffer.shader */,
+				7277A775255683610028E5A8 /* LightObject.shader */,
+				7277A776255683610028E5A8 /* ModelObject.shader */,
+			);
+			path = Shaders;
+			sourceTree = "<group>";
+		};
 		8C3636E124574C2D00E4FCE5 = {
 			isa = PBXGroup;
 			children = (
@@ -144,10 +241,11 @@
 		8C3636EC24574C2D00E4FCE5 /* OpenGL */ = {
 			isa = PBXGroup;
 			children = (
-				7251AB8C248CFA5E00413888 /* res */,
+				7277A75B255683610028E5A8 /* res */,
 				8C7FC693245E061E0007639E /* imgui-1.76 */,
 				8C7FC4E0245D5E510007639E /* stb_image */,
 				8C3636ED24574C2D00E4FCE5 /* main.cpp */,
+				7277A75A255683480028E5A8 /* GUIContext.hpp */,
 				72B7FE0F2479874B00445845 /* CommonUtils.hpp */,
 				8C7FC492245B5BA90007639E /* Renderer.cpp */,
 				8C7FC493245B5BA90007639E /* Renderer.hpp */,

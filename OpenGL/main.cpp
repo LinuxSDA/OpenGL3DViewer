@@ -5,24 +5,12 @@
 //  Created by Sumit Dhingra on 27/04/20.
 //  Copyright © 2020 LinuxSDA. All rights reserved.
 //
-#include "GL/glew.h"
-#include "GLFW/glfw3.h"
 
-#include "Renderer.hpp"
-#include "VertexBuffer.hpp"
-#include "IndexBuffer.hpp"
-#include "VertexArray.hpp"
-#include "Shader.hpp"
-#include "Texture.hpp"
+#include "GUIContext.hpp"
+
 #include "TriangleMesh.hpp"
 #include "CommonUtils.hpp"
 #include "ModelRendererHelper.hpp"
-#include "FramebufferRenderHelper.hpp"
-#include <string>
-#include <vector>
-#include <fstream>
-#include <sstream>
-#include <iostream>
 
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
@@ -47,38 +35,13 @@
 
 int main(void)
 {
-    GLFWwindow* window;
-    
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
-    
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    
     const int ScreenWidth = 1280;
     const int ScreenHeight = 720;
-    
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(ScreenWidth, ScreenHeight, "OpenGL", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
-    
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
-    
-    GLenum err = glewInit();
-    if (GLEW_OK != err)
-        std::cout << "Glew Not Okay" << std::endl;
+    const std::string WindowName = "OpenGL";
 
-    /* ToDo: Use ErrorLogger instead of couts */
-    std::cout << "OpenGL Version: => " << glGetString(GL_VERSION) << std::endl;
+    GLFWInitWindow window(ScreenWidth, ScreenHeight, WindowName);
+    window.HideCursor();
+
     
     /* Y axis is up. */
     
@@ -115,7 +78,7 @@ int main(void)
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
 
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(window.GetWindowContext(), true);
     ImGui_ImplOpenGL3_Init("#version 150");
 
     /* Todo: abstract all these GetBBox calls and put them in relevent class. SERIOUSLY! */
@@ -150,7 +113,7 @@ int main(void)
     
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
+    while (!(window.ShouldCloseWindow()))
     {
         /* Render here */
         renderer.Clear();
@@ -227,6 +190,7 @@ int main(void)
 //        framebuffer.Unbind();
 //        framebuffer.Draw(renderer, framebufferShader);
 
+        /** IM GUI **/
         {
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             
@@ -246,17 +210,12 @@ int main(void)
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-        
-        /* Poll for and process events */
-        glfwPollEvents();
+        window.SwapBuffersAndPollEvents();
     }
     
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwTerminate();
     return 0;
 }

@@ -90,13 +90,16 @@ namespace Helper
                 }
                 else if(tex.type == TriangleMesh::Texture::Specular)
                 {
-                    fModelTextures[tex.indices[0]].Bind(slot++);
+                    fModelTextures[tex.indices[0]].Bind(slot);
                     shader.SetUniform1i("u_MaterialProperty.specularTex", slot);
                     ++slot;
                 }
             }
             
             renderer.Draw(meshVA, shader);
+
+            for (const auto& tex: meshTextures)
+                fModelTextures[tex.indices[0]].Unbind();
         }
     }
     

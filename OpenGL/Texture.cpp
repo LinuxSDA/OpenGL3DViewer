@@ -11,8 +11,6 @@
 #include "stb_image.h"
 #include <fstream>
 
-/* Todo: might need a more complicated implementation soon with 32/64bit floating/integer channel values.*/
-
 Texture::Texture(unsigned int width, unsigned int height, unsigned int channels): mWidth(width), mHeight(height), mChannels(channels)
 {
     if (mChannels == 1)
@@ -77,4 +75,9 @@ void Texture::Bind(unsigned int slot) const
 void Texture::Unbind() const
 {
     GLCall(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+const std::string& Texture::GetTexturePath() const
+{
+    return mFilePath;
 }

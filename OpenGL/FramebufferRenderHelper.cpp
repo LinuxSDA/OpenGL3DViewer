@@ -26,9 +26,9 @@ namespace Helper
     void FramebufferRenderer::Draw(const Renderer& renderer, const Shader& shader) const
     {
         mFramebufferTexture.Bind();
-        GLCall(glDisable(GL_DEPTH_TEST)); // disable depth test so screen-space quad isn't discarded due to depth test.
+        renderer.DisableDepth(); // disable depth test so screen-space quad isn't discarded due to depth test.
         renderer.Draw(mQuadVA, shader);
-        GLCall(glEnable(GL_DEPTH_TEST)); // disable depth test so screen-space quad isn't discarded due to depth test.
+        renderer.EnableDepth(GL_LESS);
     }
     
     void FramebufferRenderer::InitBuffers()
@@ -38,13 +38,13 @@ namespace Helper
         mScreenVertices.emplace_back(-1.0f);
         mScreenVertices.emplace_back( 1.0f);
     
-        mScreenVertices.emplace_back(-1.0f);
-        mScreenVertices.emplace_back(-1.0f);
+        mScreenVertices.emplace_back( 1.0f);
+        mScreenVertices.emplace_back( 1.0f);
     
         mScreenVertices.emplace_back( 1.0f);
-        mScreenVertices.emplace_back( 1.0f);
+        mScreenVertices.emplace_back(-1.0f);
 
-        mScreenVertices.emplace_back( 1.0f);
+        mScreenVertices.emplace_back(-1.0f);
         mScreenVertices.emplace_back(-1.0f);
 
         mIndices.reserve(6);
@@ -53,24 +53,23 @@ namespace Helper
         mIndices.emplace_back(1);
         mIndices.emplace_back(2);
         
+        mIndices.emplace_back(0);
         mIndices.emplace_back(2);
-        mIndices.emplace_back(1);
         mIndices.emplace_back(3);
 
-        
         mTexCoords.reserve(8);
     
-        mTexCoords.emplace_back(1.0f);
-        mTexCoords.emplace_back(1.0f);
+        mTexCoords.emplace_back(0.0f);
+        mTexCoords.emplace_back(0.0f);
     
         mTexCoords.emplace_back(1.0f);
         mTexCoords.emplace_back(0.0f);
         
-        mTexCoords.emplace_back(0.0f);
+        mTexCoords.emplace_back(1.0f);
         mTexCoords.emplace_back(1.0f);
 
         mTexCoords.emplace_back(0.0f);
-        mTexCoords.emplace_back(0.0f);
+        mTexCoords.emplace_back(1.0f);
     };
     
     void FramebufferRenderer::Bind()

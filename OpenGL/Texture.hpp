@@ -1,3 +1,4 @@
+/* Texture_hpp */
 //
 //  Texture.hpp
 //  OpenGL
@@ -25,6 +26,8 @@ public:
     Texture(unsigned int width, unsigned int height, unsigned int channel);
     ~Texture();
     
+    const std::string& GetTexturePath() const;
+
     void Bind(unsigned int slot = 0) const;
     void Unbind() const;
     

@@ -12,18 +12,23 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include "gtc/type_ptr.hpp"
+#include <vector>
 
 Shader::Shader(const std::string& filePath)
-: mFilePath(filePath), mRendererId(0) {
+: mFilePath(filePath), mRendererId(0)
+{
     ShaderProgramSource source = ParseShader(filePath);
     mRendererId  = CreateShader(source.VertexSource, source.FragmentSource);
 }
 
-Shader::~Shader() {
+Shader::~Shader()
+{
     GLCall(glDeleteProgram(mRendererId));
 }
 
-ShaderProgramSource Shader::ParseShader(const std::string& filePath) {
+ShaderProgramSource Shader::ParseShader(const std::string& filePath)
+{
     std::ifstream stream(filePath);
     
     enum class ShaderType_e {
@@ -108,11 +113,34 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 void Shader::Bind() const
 {
     GLCall(glUseProgram(mRendererId));
+    PrepareTexture();
+}
+
+void Shader::PrepareTexture() const
+{
+    for(int slot = 0; slot < mTextures.size(); ++slot)
+    {
+        mTextures[slot].Bind();
+        const std::string& texPath = mTextures[slot].GetTexturePath();
+        SetUniform1i(mTexturePathToUniform.at(texPath).c_str(), slot);
+    }
 }
 
 void Shader::Unbind() const
 {
     GLCall(glUseProgram(0));
+}
+
+void Shader::SetTexture(const std::string& mTexturePath, const std::string& mTextureUniform)
+{
+    mTexturePathToUniform[mTexturePath] = mTextureUniform;
+    mTextures.emplace_back(mTexturePath);
+    SetUniformLocation(mTextureUniform);
+}
+
+void Shader::SetUniform1i(const std::string& name, int v0) const
+{
+    GLCall(glUniform1i(GetUniformLocation(name), v0));
 }
 
 void Shader::SetUniform1i(const std::string& name, int v0)
@@ -123,6 +151,11 @@ void Shader::SetUniform1i(const std::string& name, int v0)
 void Shader::SetUniform1f(const std::string& name, float v0)
 {
     GLCall(glUniform1f(GetUniformLocation(name), v0));
+}
+
+void Shader::SetUniform2f(const std::string& name, float v0, float v1)
+{
+    GLCall(glUniform2f(GetUniformLocation(name), v0, v1));
 }
 
 void Shader::SetUniform3f(const std::string& name, float v0, float v1, float v2)
@@ -140,15 +173,30 @@ void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& mat)
     GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &mat[0][0]));
 }
 
+void Shader::SetUniformVec2f(const std::string& name, const std::vector<glm::vec2>& vec)
+{
+   GLCall(glUniform2fv(GetUniformLocation(name), static_cast<int>(vec.size()), glm::value_ptr(vec[0])));
+}
+
+int Shader::GetUniformLocation(const std::string& name) const
+{
+    return mUniformLocationCache.at(name);
+}
+
 int Shader::GetUniformLocation(const std::string& name)
 {
     if (mUniformLocationCache.find(name) != mUniformLocationCache.end())
         return mUniformLocationCache[name];
-    
+ 
+    return SetUniformLocation(name);
+}
+
+int Shader::SetUniformLocation(const std::string& name)
+{
     GLCall(int location = glGetUniformLocation(mRendererId, name.c_str()));
     
     if (location == -1)
-        std::cout << "Warning: uniform '" << name << "'doesnt exist!" << std::endl;
+        std::cout << "Warning: uniform '" << name << "' doesnt exist!" << std::endl;
     
     mUniformLocationCache[name] = location;
     
