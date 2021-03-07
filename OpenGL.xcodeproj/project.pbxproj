@@ -10,6 +10,7 @@
 		724FC6512471188A00A36ACD /* libIrrXML.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C7FC6F52461FD4F0007639E /* libIrrXML.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		724FC65B24711B8D00A36ACD /* libassimp.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 724FC65A24711B8D00A36ACD /* libassimp.5.dylib */; };
 		724FC65E24711BE800A36ACD /* libassimp.5.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 724FC65A24711B8D00A36ACD /* libassimp.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		7258A3FE25F55F1F000B61EA /* libGLEW.2.1.0.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7258A3FD25F55F1F000B61EA /* libGLEW.2.1.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		72A13161249175B50035D7F1 /* ModelRendererHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72A1315F249175B50035D7F1 /* ModelRendererHelper.cpp */; };
 		72C5089C24C37BA1003268B6 /* FramebufferRenderHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72C5089A24C37BA1003268B6 /* FramebufferRenderHelper.cpp */; };
 		72C8634F24A3AEA200B25726 /* Framebuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72C8634D24A3AEA200B25726 /* Framebuffer.cpp */; };
@@ -44,6 +45,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
+				7258A3FE25F55F1F000B61EA /* libGLEW.2.1.0.dylib in CopyFiles */,
 				724FC65E24711BE800A36ACD /* libassimp.5.dylib in CopyFiles */,
 				724FC6512471188A00A36ACD /* libIrrXML.dylib in CopyFiles */,
 				8C3637192457593D00E4FCE5 /* libglfw.3.dylib in CopyFiles */,
@@ -54,6 +56,7 @@
 
 /* Begin PBXFileReference section */
 		724FC65A24711B8D00A36ACD /* libassimp.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.5.dylib; path = "assimp-5.0.1/libs/libassimp.5.dylib"; sourceTree = "<group>"; };
+		7258A3FD25F55F1F000B61EA /* libGLEW.2.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.1.0.dylib; path = "glew-2.1.0/lib/libGLEW.2.1.0.dylib"; sourceTree = "<group>"; };
 		7277A75A255683480028E5A8 /* GUIContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GUIContext.hpp; sourceTree = "<group>"; };
 		7277A75D255683610028E5A8 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		7277A760255683610028E5A8 /* GroundPlane.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GroundPlane.mtl; sourceTree = "<group>"; };
@@ -224,6 +227,7 @@
 		8C3636E124574C2D00E4FCE5 = {
 			isa = PBXGroup;
 			children = (
+				7258A3FD25F55F1F000B61EA /* libGLEW.2.1.0.dylib */,
 				8C3636EC24574C2D00E4FCE5 /* OpenGL */,
 				8C3636EB24574C2D00E4FCE5 /* Products */,
 				8C3636F4245755F300E4FCE5 /* Frameworks */,
